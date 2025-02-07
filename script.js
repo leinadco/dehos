@@ -3,7 +3,7 @@ console.clear()
 const oriImages = {
   1: {
     category: "moon",
-    url: "http://127.0.0.1:3000/images/20221109_215055.jpg",
+    url: "http://127.0.0.1:3000/Images/20221109_215055.jpg",
   },
   2: {
     category: "special light",
