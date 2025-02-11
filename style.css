@@ -36,6 +36,10 @@ hr {
     border: 1.5px solid #00ff6a;
 }
 
+.indication{
+    margin: 10px;
+}
+
 .container {
     display: flex;
     flex-direction: row;
@@ -45,10 +49,14 @@ hr {
 }
 
 .image {
+    box-shadow: -3px -3px 17px #bfffda;
     width: calc(92% / 4);
     /*aspect-ratio: 1 / 1;*/
     background-color: #bfffda;
     border-radius: 10px;
+}
+.image:hover {
+    background-color: #6dfda9;
 }
 
 img {
@@ -58,7 +66,6 @@ img {
     border-radius: 10px;
 }
 img:hover {
-    background-color: #6dfda9;
     padding: 5px;
 }
 .image > p {
@@ -94,7 +101,7 @@ img:hover {
     }
 }
 
-@media (max-width: 515px) {
+@media (max-width: 550px) {
     * {
         font-size: 2.1vw;
     }

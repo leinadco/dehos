@@ -164,35 +164,42 @@ const oriImages = {
   },
 };
 //console.log(oriImages);
-
-function displayNavCategories() {
-    const navigation = document.querySelector("nav");
-    const ul = document.createElement("ul");
-    const categories = ["all"];
-    Object.values(oriImages).forEach(value => {
-        oriCategories = value["category"];
-        for (let i = 0; i < oriCategories.length; i++) {
-            if (!categories.includes(oriCategories[i])) {
-                categories.push(oriCategories[i]);
+let nVis = 10;
+function displayNavCategories(oriImages, nVis) {
+    try {
+        const navigation = document.querySelector("nav");
+        const ul = document.createElement("ul");
+        const categories = ["all"];
+        Object.values(oriImages).forEach(value => {
+            oriCategories = value["category"];
+            for (let i = 0; i < oriCategories.length; i++) {
+                if (!categories.includes(oriCategories[i])) {
+                    categories.push(oriCategories[i]);
+                }
             }
+        });
+        categories.sort();
+        for (let i = 0; i < categories.length; i++) {
+            const li = document.createElement("li");
+            li.textContent = categories[i].toUpperCase();
+            li.addEventListener("click", filterImages);
+            ul.appendChild(li);
         }
-    });
-    categories.sort();
-    for (let i = 0; i < categories.length; i++) {
-        const li = document.createElement("li");
-        li.textContent = categories[i].toUpperCase();
-        li.addEventListener("click", filterImages);
-        ul.appendChild(li);
+        navigation.appendChild(ul);
+        //displayIndication();
+        displayImages(oriImages, nVis);
+    } catch {
+        //displayIndication();
+        displayImages(oriImages, nVis);
     }
-    navigation.appendChild(ul);
-    displayImages();
-}   displayNavCategories();
+}   displayNavCategories(oriImages, nVis);
 
 function filterImages(event) {
     category = event.target.textContent.toLowerCase();
     filtration = {};
     if (category === "all") {
-        displayImages(oriImages);
+        //displayIndication(oriImages);
+        displayImages(oriImages, nVis);
     } else {
         Object.values(oriImages).forEach((value, index) => {
             oriCategories = value["category"];
@@ -203,50 +210,105 @@ function filterImages(event) {
                 }
             }
         });
-        displayImages(filtration);
-        const p = document.querySelectorAll(".container > div > p");
+        //displayIndication(filtration);
+        displayImages(filtration, nVis);
+        const p = document.querySelectorAll(".image > p");
+        const images = document.querySelectorAll(".image");
+        console.log(images);
         for (let i = 0; i < p.length; i++) {
             p[i].style.display = "none";
+            //images[i].style.backgroundColor = "";
+            //console.log(images[i].innerHTML);           
         }
     }
 } 
 
-function renderImages(image, div) {
+function displayIndication(nImg, nVis /*images = oriImages*/) {
+    const number = document.querySelectorAll("button.number");
+    /*let nImg = 0;
+    Object.keys(images).forEach(key => {
+        nImg = nImg + 1;
+    });*/
+    number.forEach(num => {
+        if (nImg <= nVis) {
+            num.textContent = nImg;
+        } else {
+            num.textContent = nVis + "/"+ nImg;
+        }
+    });
+}
+
+function lessImg() {
+    const button = querySelectorAll(".indication > .less");
+
+}
+
+
+async function renderImages(url, category, div) {
     const img = document.createElement("img");
-    img.src = image["url"];
-    img.alt = image["category"];
+    img.src = url;//image["url"];
+    img.alt = category; //["category"];
     div.appendChild(img);
 } //renderImages();
 
-function renderCategory(image, div) {
+async function renderCategory(category, div) {
     const p = document.createElement("p");
     p.className = "category";
-    oriCategories = image["category"];
-    for (let i = 0; i < oriCategories.length; i++) {
-        p.textContent += oriCategories[i].toUpperCase();
-        if (i < oriCategories.length - 1) {
+    //oriCategories = category;
+    
+    for (let i = 0; i < category.length; i++) {
+        p.textContent += category[i].toUpperCase();
+        if (i < category.length - 1) {
             p.textContent += ", ";
         }
     }    
     div.appendChild(p);
 } //renderCategory();
 
-function displayImages(images = oriImages) {
+function displayImages(images = oriImages, nVis) {
     const container = document.querySelector(".container");
     container.innerHTML = "";
+    const categories = [];
+    const urls = [];
+    let nImg = 0;
     Object.values(images).forEach(value => {
-        const div = document.createElement("div");
+        categories.push(value["category"]);
+        urls.push(value["url"]);
+        nImg += 1;
+        /*const div = document.createElement("div");
         div.className = "image";
-        renderImages(value, div);
-        renderCategory(value, div);
+        renderImages(value, div, nImg);
+        renderCategory(value, div, nImg);
         div.addEventListener("click", function() {
-            console.log(value["url"].slice(7, -4));
-        });
-        container.appendChild(div);
+            console.log(value["url"]);
+        });*/
+        //container.appendChild(div);
     });
+
+    if (categories.length == urls.length) {
+        for (let i = 0; i < categories.length; i++) {
+            displayIndication(nImg, nVis);
+            if (i <= nVis) {
+                const div = document.createElement("div")
+                div.className = "image";
+                renderImages(urls[i], categories[i], div, nVis);
+                renderCategory(categories[i], div, nVis);
+                div.addEventListener("click", function() {
+                    console.log(urls[i]);//value["url"]);
+                })
+                container.appendChild(div);
+            } else {
+                break;
+            }
+        }
+    }
 }
 
-function adjustparagraph() {
+
+
+
+
+/*function adjustparagraph() {
     const p = document.querySelectorAll(".image > p");
     let length = 0;
     for (let i = 0; i < p.length; i++) {
@@ -282,6 +344,16 @@ function adjustWidth() {
         console.log(imagCont[i].innerHTML)
         imagCont[i].style.height = max + "px";
     }
-}   //adjustWidth();
+}   //adjustWidth();*/
 
-//console.log(document.getElementsByTagName("body")[0].innerHTML);
+function sunriseSunset() {
+    const hour = new Date().getHours();
+    const isDay = hour >= 6 && hour < 18; // Ziua este între 6:00 și 18:00
+    const body = document.getElementsByTagName("body");
+    if (isDay) {
+        body[0].style.backgroundColor = "white";
+    } else {
+        body[0].style.backgroundColor = "black";
+        //body[0].style.color = "black";
+    }
+}   sunriseSunset();
