@@ -1,3 +1,13 @@
+:root {
+    --primary-light-color: #bfffcf; /*bfffda*/
+    --secondary-light-color: #7fff7f; /*6dfda9*/
+    --third-light-color: #00ff00; /*00ff6a*/
+
+    --primary-dark-color: #66aa66;
+    --secondary-dark-color: #44aa44;
+    --third-dark-color: #00aa00;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -8,11 +18,12 @@ body {
 }
 
 nav {
-    background-color: #bfffda;
-    margin: 7px 10px;
-    padding: 15px;
-    border-radius: 25px;
-    
+    background-color: var(--primary-light-color);
+    padding: 5px 0;
+    border-radius: 10px;
+}
+.navDark {
+    background-color: var(--primary-dark-color);
 }
 nav > ul {
     display: flex;
@@ -25,15 +36,22 @@ li {
     list-style-type: none;
     border-radius: 25px;
     padding: 10px;
+    cursor: pointer;
 }
 li:hover {
-    background-color: #6dfda9;
+    background-color: var(--secondary-light-color);
+}
+.darkLi:hover {
+    background-color: var(--secondary-dark-color);
 }
 
 hr {
     width: 93%;
     margin: 10px auto;
-    border: 1.5px solid #00ff6a;
+    border: 1.5px solid var(--third-light-color);
+}
+.darkHr {
+    border: 1.5px solid var(--third-dark-color);
 }
 
 .indication{
@@ -49,14 +67,24 @@ hr {
 }
 
 .image {
-    box-shadow: -3px -3px 17px #bfffda;
+    box-shadow: -3px -3px 17px var(--primary-light-color);
     width: calc(92% / 4);
     /*aspect-ratio: 1 / 1;*/
-    background-color: #bfffda;
+    background-color: var(--primary-light-color);
     border-radius: 10px;
 }
+.darkImage {
+    box-shadow: -3px -3px 17px var(--primary-dark-color);
+    background-color: var(--primary-dark-color);
+}
+
 .image:hover {
-    background-color: #6dfda9;
+    background-color: var(--secondary-light-color);
+    padding: 5px;
+}
+
+.darkImage:hover {
+    background-color: var(--secondary-dark-color);
 }
 
 img {
@@ -66,10 +94,10 @@ img {
     border-radius: 10px;
 }
 img:hover {
-    padding: 5px;
+    
 }
 .image > p {
-    
+    cursor: default;
 }
 
 @media (min-width: 900px) {
@@ -101,7 +129,7 @@ img:hover {
     }
 }
 
-@media (max-width: 550px) {
+@media (max-width: 600px) {
     * {
         font-size: 2.1vw;
     }

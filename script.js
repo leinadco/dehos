@@ -164,7 +164,7 @@ const oriImages = {
   },
 };
 //console.log(oriImages);
-let nVis = 10;
+let nVis = 20;
 function displayNavCategories(oriImages, nVis) {
     try {
         const navigation = document.querySelector("nav");
@@ -186,11 +186,19 @@ function displayNavCategories(oriImages, nVis) {
             ul.appendChild(li);
         }
         navigation.appendChild(ul);
-        //displayIndication();
-        displayImages(oriImages, nVis);
-    } catch {
-        //displayIndication();
-        displayImages(oriImages, nVis);
+    } catch (error) {
+        console.log("Navigation catch. " + error);
+    } finally {
+        try {
+            displayImages(oriImages, nVis);
+        } catch (error) {
+            console.log("Images displaying catch. " + error);
+        } finally {
+            const buttons = document.querySelectorAll("button.less");
+            buttons.forEach(button => {
+                button.addEventListener("click", moreImg);
+            });
+        }
     }
 }   displayNavCategories(oriImages, nVis);
 
@@ -198,7 +206,6 @@ function filterImages(event) {
     category = event.target.textContent.toLowerCase();
     filtration = {};
     if (category === "all") {
-        //displayIndication(oriImages);
         displayImages(oriImages, nVis);
     } else {
         Object.values(oriImages).forEach((value, index) => {
@@ -210,25 +217,17 @@ function filterImages(event) {
                 }
             }
         });
-        //displayIndication(filtration);
         displayImages(filtration, nVis);
         const p = document.querySelectorAll(".image > p");
         const images = document.querySelectorAll(".image");
-        console.log(images);
         for (let i = 0; i < p.length; i++) {
-            p[i].style.display = "none";
-            //images[i].style.backgroundColor = "";
-            //console.log(images[i].innerHTML);           
+            p[i].style.display = "none";       
         }
     }
 } 
 
-function displayIndication(nImg, nVis /*images = oriImages*/) {
+function displayIndication(nImg, nVis) {
     const number = document.querySelectorAll("button.number");
-    /*let nImg = 0;
-    Object.keys(images).forEach(key => {
-        nImg = nImg + 1;
-    });*/
     number.forEach(num => {
         if (nImg <= nVis) {
             num.textContent = nImg;
@@ -238,24 +237,20 @@ function displayIndication(nImg, nVis /*images = oriImages*/) {
     });
 }
 
-function lessImg() {
-    const button = querySelectorAll(".indication > .less");
-
+function moreImg(nImg, nVis) {
 }
 
 
 async function renderImages(url, category, div) {
     const img = document.createElement("img");
-    img.src = url;//image["url"];
-    img.alt = category; //["category"];
+    img.src = url;
+    img.alt = category;
     div.appendChild(img);
 } //renderImages();
 
 async function renderCategory(category, div) {
     const p = document.createElement("p");
     p.className = "category";
-    //oriCategories = category;
-    
     for (let i = 0; i < category.length; i++) {
         p.textContent += category[i].toUpperCase();
         if (i < category.length - 1) {
@@ -275,14 +270,6 @@ function displayImages(images = oriImages, nVis) {
         categories.push(value["category"]);
         urls.push(value["url"]);
         nImg += 1;
-        /*const div = document.createElement("div");
-        div.className = "image";
-        renderImages(value, div, nImg);
-        renderCategory(value, div, nImg);
-        div.addEventListener("click", function() {
-            console.log(value["url"]);
-        });*/
-        //container.appendChild(div);
     });
 
     if (categories.length == urls.length) {
@@ -294,7 +281,7 @@ function displayImages(images = oriImages, nVis) {
                 renderImages(urls[i], categories[i], div, nVis);
                 renderCategory(categories[i], div, nVis);
                 div.addEventListener("click", function() {
-                    console.log(urls[i]);//value["url"]);
+                    console.log(urls[i]);
                 })
                 container.appendChild(div);
             } else {
@@ -304,56 +291,26 @@ function displayImages(images = oriImages, nVis) {
     }
 }
 
-
-
-
-
-/*function adjustparagraph() {
-    const p = document.querySelectorAll(".image > p");
-    let length = 0;
-    for (let i = 0; i < p.length; i++) {
-        length += p[i].textContent.length;
-    }
-    const med = length/p.length;
-    for (let i = 0; i < p.length; i++) {
-        let size = window.getComputedStyle(p[i]).fontSize;
-        if (p[i].textContent.length > med) {
-            let pSize = parseInt(size.slice(0,size.indexOf(".")));
-            console.log(pSize);
-            p[i].style.fontSize = (pSize-1) + "px";
-            console.log(window.getComputedStyle(p[i]).fontSize);
-        }
-    }
-}   //adjustparagraph();
-
-function adjustWidth() {
-    let imagCont = document.querySelectorAll(".image");
-    let heights = [];
-    for (let i = 0; i < imagCont.length; i++) {
-        let height1 = window.getComputedStyle(imagCont[i]).height;
-        height1 = parseInt(height1.slice(0,height1.indexOf(".")+2))
-        heights.push(height1);
-    }
-    let max = 0;
-    for (let i = 0; i < heights.length; i++) {
-        if (heights[i] > max) {
-            max = heights[i];
-        }
-    }
-    for (let i = 0; i < imagCont.length; i++) {
-        console.log(imagCont[i].innerHTML)
-        imagCont[i].style.height = max + "px";
-    }
-}   //adjustWidth();*/
-
 function sunriseSunset() {
     const hour = new Date().getHours();
     const isDay = hour >= 6 && hour < 18; // Ziua este între 6:00 și 18:00
-    const body = document.getElementsByTagName("body");
+    const body = document.querySelector("body");
+    const nav = document.querySelector("nav");
+    const lis = document.querySelectorAll("nav li");
+    const hr = document.querySelector("hr");
+    const images = document.querySelectorAll(".image");
     if (isDay) {
-        body[0].style.backgroundColor = "white";
+        body.style.backgroundColor = "white";
     } else {
-        body[0].style.backgroundColor = "black";
-        //body[0].style.color = "black";
+        body.style.backgroundColor = "black";
+        nav.classList.toggle("navDark");
+        lis.forEach(li => {
+            li.classList.toggle("darkLi");
+        });
+        hr.classList.toggle("darkHr");
+        images.forEach(image => {
+            image.classList.toggle("darkImage");
+        });
+        //body[0].style.color = "white";
     }
 }   sunriseSunset();
