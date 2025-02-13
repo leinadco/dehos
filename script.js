@@ -219,11 +219,11 @@ function filterImages(event) {
         });
         displayImages(filtration, nVis);
         const p = document.querySelectorAll(".image > p");
-        const images = document.querySelectorAll(".image");
         for (let i = 0; i < p.length; i++) {
             p[i].style.display = "none";       
         }
     }
+    //sunriseSunset();
 } 
 
 function displayIndication(nImg, nVis) {
@@ -241,28 +241,39 @@ function moreImg(nImg, nVis) {
 }
 
 
-async function renderImages(url, category, div) {
+async function createImg(url, category, div) {
     const img = document.createElement("img");
     img.src = url;
     img.alt = category;
     div.appendChild(img);
-} //renderImages();
+}
 
-async function renderCategory(category, div) {
+async function createPar(categories, div) {
     const p = document.createElement("p");
     p.className = "category";
-    for (let i = 0; i < category.length; i++) {
-        p.textContent += category[i].toUpperCase();
-        if (i < category.length - 1) {
+    for (let i = 0; i < categories.length; i++) {
+        p.textContent += categories[i].toUpperCase();
+        if (i < categories.length - 1) {
             p.textContent += ", ";
         }
     }    
     div.appendChild(p);
-} //renderCategory();
+}
+
+async function createDivImg(url, category, containerImg) {
+    const div = document.createElement("div")
+    div.className = "image";
+    createImg(url, category, div, nVis);
+    createPar(category, div, nVis);
+    div.addEventListener("click", function() {
+        console.log(url);
+    })
+    containerImg.appendChild(div);
+}
 
 function displayImages(images = oriImages, nVis) {
-    const container = document.querySelector(".container");
-    container.innerHTML = "";
+    const containerImg = document.querySelector(".container");
+    containerImg.innerHTML = "";
     const categories = [];
     const urls = [];
     let nImg = 0;
@@ -276,41 +287,33 @@ function displayImages(images = oriImages, nVis) {
         for (let i = 0; i < categories.length; i++) {
             displayIndication(nImg, nVis);
             if (i <= nVis) {
-                const div = document.createElement("div")
-                div.className = "image";
-                renderImages(urls[i], categories[i], div, nVis);
-                renderCategory(categories[i], div, nVis);
-                div.addEventListener("click", function() {
-                    console.log(urls[i]);
-                })
-                container.appendChild(div);
+                createDivImg(urls[i], categories[i], containerImg);
             } else {
-                break;
+                
             }
         }
     }
+    sunriseSunset();
 }
 
 function sunriseSunset() {
     const hour = new Date().getHours();
-    const isDay = hour >= 6 && hour < 18; // Ziua este între 6:00 și 18:00
-    const body = document.querySelector("body");
-    const nav = document.querySelector("nav");
-    const lis = document.querySelectorAll("nav li");
-    const hr = document.querySelector("hr");
-    const images = document.querySelectorAll(".image");
-    if (isDay) {
-        body.style.backgroundColor = "white";
-    } else {
-        body.style.backgroundColor = "black";
-        nav.classList.toggle("navDark");
-        lis.forEach(li => {
-            li.classList.toggle("darkLi");
+    const isDay = hour >= 7 && hour < 19; // Ziua este între 6:00 și 18:00
+    const body1 = document.querySelector("body");
+    const nav1 = document.querySelector("nav");
+    const lis1 = document.querySelectorAll("ul li");
+    const hr1 = document.querySelector("hr");
+    const images1 = document.querySelectorAll(".image");
+    if (!isDay) {
+        body1.style.backgroundColor = "black";
+        body1.classList.add("bodyDark");
+        nav1.classList.add("navDark");
+        lis1.forEach(li => {
+            li.classList.add("darkLi");
         });
-        hr.classList.toggle("darkHr");
-        images.forEach(image => {
-            image.classList.toggle("darkImage");
+        images1.forEach(image => {
+            image.classList.add("darkImage");
         });
-        //body[0].style.color = "white";
+        body1.style.color = "white";
     }
-}   sunriseSunset();
+}

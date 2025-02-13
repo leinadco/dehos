@@ -1,11 +1,11 @@
 :root {
-    --primary-light-color: #bfffcf; /*bfffda*/
-    --secondary-light-color: #7fff7f; /*6dfda9*/
-    --third-light-color: #00ff00; /*00ff6a*/
+    --primary-light-color: #bfffcf;
+    --secondary-light-color: #7fff7f;
+    --third-light-color: #00ff00;
 
-    --primary-dark-color: #66aa66;
-    --secondary-dark-color: #44aa44;
-    --third-dark-color: #00aa00;
+    --primary-dark-color: #003300;
+    --secondary-dark-color: #008800;
+    --third-dark-color: #00ff00;
 }
 
 * {
@@ -15,6 +15,10 @@
 body {
     text-align: center;
     font-family: Georgia, 'Times New Roman', Times, serif;
+    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(226,255,233,1) 100%);
+}
+.bodyDark {
+    background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,34,0,1) 100%);
 }
 
 nav {
@@ -50,9 +54,9 @@ hr {
     margin: 10px auto;
     border: 1.5px solid var(--third-light-color);
 }
-.darkHr {
+/*.darkHr {
     border: 1.5px solid var(--third-dark-color);
-}
+}*/
 
 .indication{
     margin: 10px;
@@ -67,23 +71,23 @@ hr {
 }
 
 .image {
-    box-shadow: -3px -3px 17px var(--primary-light-color);
+    /*box-shadow: -3px -3px 17px var(--primary-light-color);*/
     width: calc(92% / 4);
     /*aspect-ratio: 1 / 1;*/
     background-color: var(--primary-light-color);
     border-radius: 10px;
 }
-.darkImage {
-    box-shadow: -3px -3px 17px var(--primary-dark-color);
-    background-color: var(--primary-dark-color);
-}
-
 .image:hover {
     background-color: var(--secondary-light-color);
+    /*box-shadow: -3px -3px 17px var(--secondary-light-color);*/
     padding: 5px;
 }
-
+.darkImage {
+    /*box-shadow: -3px -3px 17px var(--primary-dark-color);*/
+    background-color: var(--primary-dark-color);
+}
 .darkImage:hover {
+    /*box-shadow: -3px -3px 17px var(--secondary-dark-color);*/
     background-color: var(--secondary-dark-color);
 }
 
@@ -127,11 +131,19 @@ img:hover {
         width: 90%;
         margin: auto;
     }
+
+    li {
+        padding: 8px;
+    }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 517px) {
     * {
         font-size: 2.1vw;
+    }
+
+    .container {
+        width: 100%;
     }
 
     li {
