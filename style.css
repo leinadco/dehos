@@ -16,6 +16,7 @@ body {
     text-align: center;
     font-family: Georgia, 'Times New Roman', Times, serif;
     background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(226,255,233,1) 100%);
+    color: black;
 }
 .bodyDark {
     background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,34,0,1) 100%);
@@ -23,7 +24,6 @@ body {
 
 nav {
     background-color: var(--primary-light-color);
-    padding: 5px 0;
     border-radius: 10px;
     position: sticky;
     top: 0;
@@ -35,13 +35,13 @@ nav {
 nav > ul {
     display: flex;
     justify-content: center;
-    padding: 0;
+    padding: 5px;
     flex-wrap: wrap;
 }
 
 li {
     list-style-type: none;
-    border-radius: 25px;
+    border-radius: 5px;
     padding: 10px;
     cursor: pointer;
 }
@@ -57,12 +57,21 @@ hr {
     margin: 10px auto;
     border: 1.5px solid var(--third-light-color);
 }
-/*.darkHr {
-    border: 1.5px solid var(--third-dark-color);
-}*/
 
 .indication{
     margin: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+.indi {
+    background-color: var(--secondary-dark-color);
+    margin: 2px;
+    padding: 5px;
+    border: none;
+    border-radius: 2px;
+    min-width: 50px;
 }
 
 .container {
@@ -101,7 +110,7 @@ img {
     border-radius: 10px;
 }
 img:hover {
-    
+    border-radius: 5px;
 }
 .image > p {
     cursor: default;

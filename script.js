@@ -201,6 +201,46 @@ const oriImages = {
         category: ["nature", "fall"],
         url: "Images/20231126_114316.jpg",
     },
+    51: {
+        category: ["nature"],
+        url: "Images/20231126_114333.jpg",
+    },
+    52: {
+        category: ["nature"],
+        url: "Images/20231201_163458.jpg",
+    },
+    53: {
+        category: ["traffic"],
+        url: "Images/20231201_204914.jpg",
+    },
+    54: {
+        category: ["monument", "snow"],
+        url: "Images/20231207_125214.jpg",
+    },
+    55: {
+        category: ["sky"],
+        url: "Images/20231207_155657.jpg",
+    },
+    56: {
+        category: ["sky", "city"],
+        url: "Images/20231207_170734.jpg",
+    },
+    57: {
+        category: ["traffic", "rain"],
+        url: "Images/20231210_131242.jpg",
+    },
+    58: {
+        category: ["sky", "sunset"],
+        url: "Images/20240206_071427.jpg",
+    },
+    59: {
+        category: ["city", "sky"],
+        url: "Images/20240219_181213.jpg",
+    },
+    60: {
+        category: ["coffee"],
+        url: "Images/20240301_072329.jpg",
+    },
 };
 function displayNavCategories(oriImages) {
     try {
@@ -230,13 +270,13 @@ function displayNavCategories(oriImages) {
         try {
             const [categories, urls] = objToArr(oriImages);
             displayImages(categories, urls);
-            displayIndication();
+            activImg("undefined");
         } catch (error) {
             console.log("Images displaying catch. " + error);
         } finally {
             const buttons = document.querySelectorAll(".indication button");
             buttons.forEach((button) => {
-                //button.addEventListener("click", lessMoreImg);
+                button.addEventListener("click", lessMoreImg);
             });
         }
     }
@@ -246,7 +286,7 @@ function filterImages(event) {
     category = event.target.textContent.toLowerCase();
     const [categories, urls] = objToArr(oriImages, category);
     displayImages(categories, urls);
-    displayIndication();
+    activImg("undefined");
     if (category !== "all") {
         const p = document.querySelectorAll(".image > p");
         for (let i = 0; i < p.length; i++) {
@@ -270,40 +310,64 @@ function objToArr(object, category = "all") {
     return [categories, urls];
 }
 
-function displayImages(categories, urls, nVis) {
+async function displayImages(categories, urls) {
     const containerImg = document.querySelector(".container");
-    containerImg.innerHTML = "";
+    let container = "";
     let nImg = 0;
     if ((categories.length = urls.length)) {
         nImg = categories.length;
         for (let i = 0; i < categories.length; i++) {
-            createDivImg(urls[i], categories[i], containerImg);
+            container += createDivImg(urls[i], categories[i]);
         }
     }
+    containerImg.innerHTML = container;
     sunriseSunset();
 }
 
-async function createDivImg(url, category, containerImg) {
-    const div = document.createElement("div");
+function createDivImg(url, category/*, containerImg*/) {
+    let divImg = "";
+    divImg += "<div class='image'>";
+    divImg += createImg(url, category/*, div*/);
+    divImg += createPar(category/*, div*/);
+    divImg += "</div>";
+    return divImg;
+    /*const div = document.createElement("div");
     div.className = "image";
     createImg(url, category, div);
     createPar(category, div);
     div.addEventListener("click", function () {
         console.log(url);
     });
-    containerImg.appendChild(div);
+    containerImg.appendChild(div);*/
 }
 
-async function createImg(url, category, div) {
-    const img = document.createElement("img");
+function createImg(url, category/*, div*/) {
+    let image = "";
+    image = `<img src="${url}" alt="${category}" loading="lazy">`;
+    return image;
+    /*const img = document.createElement("img");
     img.src = url;
     img.alt = category;
     img.loading = "lazy"; //imaginile se incarca doar cand utilizatorul ajunge la ele pe pagina
-    div.appendChild(img);
+    div.appendChild(img);*/
 }
 
-async function createPar(categories, div) {
-    const p = document.createElement("p");
+function createPar(categories/*, div*/) {
+    let par = "";
+    par = "<p class='category'>";
+    if (categories.length >= 2) {
+        for (let i = 0; i < categories.length; i++) {
+            //console.log(categories[i].toUpperCase());
+            par += categories[i].toUpperCase();
+            if (i < categories.length - 1) {
+                par += ", ";
+            }
+        }
+    } else {
+        par += categories[0].toUpperCase();
+    }
+    return par;
+    /*const p = document.createElement("p");
     p.className = "category";
     if (categories.length >= 2) {
         for (let i = 0; i < categories.length; i++) {
@@ -315,99 +379,86 @@ async function createPar(categories, div) {
     } else {
         p.textContent += categories[0].toUpperCase();
     }
-    div.appendChild(p);
+    div.appendChild(p);*/
 }
 
-function displayIndication(element = "undefined") {
-    let imgPag = 0;
-    let imgVis = 0;
-    if (element === "undefined") {
-        imgPag = Number(document.getElementById("selection").value);
+function activImg(event = "undefined"){
+    const [visualizedImg, visualizedImgLen] = cathcVis();
+    const [min, step] = getMinStep(event, visualizedImgLen);
+    activateImg(visualizedImg, visualizedImgLen, min, step);
+}
+
+function getMinStep(event, visualizedImgLen){
+    let step = 0;
+    if (event === "undefined") {
+        let select = document.querySelector(".indication select");
+        step = select.options[select.options.selectedIndex].value;
+        min = 0;
+        displayIndication(min, step, visualizedImgLen, event);
     } else {
-        imgPag = Number(element.value)
+        step = event.options[event.options.selectedIndex].value;
+        displayIndication(min, step, visualizedImgLen, event);
     }
-    
-    console.log(element.value);
-    const visualizedImg = document.querySelectorAll(".image");
-    console.log(Object.keys(visualizedImg).length);
-    const visualizedImgLen = Object.keys(visualizedImg).length;
-    for (let i = 0; i < visualizedImgLen; i++) {
-        console.log(true + " undefined");
-        if (i > imgPag-1) {
-            visualizedImg[i].style.display = "none";
+    return [min, step];
+}
+
+function displayIndication(min, step, total, event) {
+    Object.values(document.querySelectorAll(".indication label")).forEach(element => {
+        if (total < step) {
+            element.textContent = `${total} / ${total}`;
         } else {
+            if (min == 0) {
+                element.textContent = `${min+1}/${step} - ${total}`;
+            } else {
+                element.textContent = `${min+1}/${min+step} - ${total}`;
+            }
+        }
+    });
+    if (event !== "undefined") {
+        const selects = document.querySelectorAll(".indication select");
+        Object.values(selects).forEach(element => {
+            element.value = step;
+        });
+    }
+}
+
+function cathcVis(){
+    const visualizedImg = document.querySelectorAll(".image");
+    const visualizedImgLen = Object.keys(visualizedImg).length;
+    return [visualizedImg, visualizedImgLen];
+}
+function activateImg(visualizedImg, visualizedImgLen, min, step) {
+    for (let i = 0; i < visualizedImgLen; i++) {
+        if (i >= min && i < min+step) {
             visualizedImg[i].style.display = "inline-block";
-            imgVis += 1;
+        } else {
+            visualizedImg[i].style.display = "none";
         }
     }
-    Object.values(document.querySelectorAll("select")).forEach(element => {
-        element.value = imgPag;
-    });
-    updateNumVis(imgVis, visualizedImgLen);
-    //lessMoreImg();
 }
 
 function updateNumVis(imgVis, visualizedImgLen) {
-    console.log(imgVis);
-    console.log(visualizedImgLen);
-    const numVis = document.querySelectorAll("label");
+    const numVis = document.querySelectorAll(".indication label");
     Object.values(numVis).forEach(element => {
         element.textContent = imgVis + "/" + visualizedImgLen;
     });
+    lessMoreImg("undefined");
 }
 
 function lessMoreImg(event) {
-    const visualized = Number(document.querySelectorAll("button.number")[0].value);
-    const visualizedImg = document.querySelectorAll(".image");
-    console.log(Object.keys(visualizedImg).length);
-    const visualizedImgLen = Object.keys(visualizedImg).length;
-    if (typeof event === "undefined") {
-        for (let i = 0; i < visualizedImgLen; i++) {
-            console.log(true + " undefined");
-            if (i > visualized-1) {
-            visualizedImg[i].style.display = "none";
-            }
-        }
-    } else {
-        if (event.target.title === "+") {
-            for (let i = 0; i < visualizedImgLen; i++) {
-                console.log(true + " +");
-                if (i > visualized+1 && i < visualized+visualized-1) {
-                    console.log(i);
-                    visualizedImg[i].style.display = "inline-block";
-                } else {
-                    visualizedImg[i].style.display = "none"
-                }
-            }
-            displayIndication(visMin = 0, visMax = 0, categories.length)
-        } else if (event.target.title === "-") {
-            for (let i = 0; i < visualizedImgLen; i++) {
-                console.log(true + " -");
-                if (i < visualized && i > visualized-visualized-1) {
-                    console.log(i);
-                    visualizedImg[i].style.display = "inline-block";
-                } else {
-                    visualizedImg[i].style.display = "none"
-                }
-            }
-        }
-        
-    
-    console.log(visualized);
-    }
 }
 
 function sunriseSunset() {
     const hour = new Date().getHours();
-    const isDay = hour >= 7 && hour < 19; // Ziua este între 6:00 și 18:00
-    const body1 = document.querySelector("body");
+    const isDay = hour >= 7 && hour < 19; // Ziua este între 6:00 și 19:00
+    const body = document.querySelector("body");
     const nav1 = document.querySelector("nav");
-    const lis1 = document.querySelectorAll("ul li");
-    const hr1 = document.querySelector("hr");
+    const lis1 = document.querySelectorAll("ul > li");
+    //const hr1 = document.querySelector("hr");
     const images1 = document.querySelectorAll(".image");
     if (!isDay) {
-        body1.style.backgroundColor = "black";
-        body1.classList.add("bodyDark");
+        document.querySelectorAll("*").forEach(el => el.style.color = "white");
+        body.classList.add("bodyDark");
         nav1.classList.add("navDark");
         lis1.forEach((li) => {
             li.classList.add("darkLi");
@@ -415,6 +466,5 @@ function sunriseSunset() {
         images1.forEach((image) => {
             image.classList.add("darkImage");
         });
-        body1.style.color = "white";
     }
 }
