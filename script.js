@@ -276,11 +276,12 @@ function displayNavCategories(oriImages) {
         } finally {
             const buttons = document.querySelectorAll(".indication button");
             buttons.forEach((button) => {
-                button.addEventListener("click", lessMoreImg);
+                button.addEventListener("click", activImg);
             });
         }
     }
-}   displayNavCategories(oriImages);
+}
+displayNavCategories(oriImages);
 
 function filterImages(event) {
     category = event.target.textContent.toLowerCase();
@@ -324,11 +325,11 @@ async function displayImages(categories, urls) {
     sunriseSunset();
 }
 
-function createDivImg(url, category/*, containerImg*/) {
+function createDivImg(url, category /*, containerImg*/) {
     let divImg = "";
     divImg += "<div class='image'>";
-    divImg += createImg(url, category/*, div*/);
-    divImg += createPar(category/*, div*/);
+    divImg += createImg(url, category /*, div*/);
+    divImg += createPar(category /*, div*/);
     divImg += "</div>";
     return divImg;
     /*const div = document.createElement("div");
@@ -341,7 +342,7 @@ function createDivImg(url, category/*, containerImg*/) {
     containerImg.appendChild(div);*/
 }
 
-function createImg(url, category/*, div*/) {
+function createImg(url, category /*, div*/) {
     let image = "";
     image = `<img src="${url}" alt="${category}" loading="lazy">`;
     return image;
@@ -352,7 +353,7 @@ function createImg(url, category/*, div*/) {
     div.appendChild(img);*/
 }
 
-function createPar(categories/*, div*/) {
+function createPar(categories /*, div*/) {
     let par = "";
     par = "<p class='category'>";
     if (categories.length >= 2) {
@@ -382,72 +383,141 @@ function createPar(categories/*, div*/) {
     div.appendChild(p);*/
 }
 
-function activImg(event = "undefined"){
+function activImg(event = "undefined") {
+    //console.log("Control event " + event.target.id);
+    if (event === "undefined") {
+        console.log("undefined");
+    } else if (event !== "undefined") {
+        console.log("not undefined");
+    }
     const [visualizedImg, visualizedImgLen] = cathcVis();
+    console.log("Visualized images " + visualizedImgLen);
     const [min, step] = getMinStep(event, visualizedImgLen);
+    console.log("MIN si step " + min + " " + step);
     activateImg(visualizedImg, visualizedImgLen, min, step);
+    updateSelect(event);
 }
 
-function getMinStep(event, visualizedImgLen){
-    let step = 0;
-    if (event === "undefined") {
-        let select = document.querySelector(".indication select");
-        step = select.options[select.options.selectedIndex].value;
-        min = 0;
-        displayIndication(min, step, visualizedImgLen, event);
+function getMinStep(event, visualizedImgLen) {
+    let select = document.querySelector(".indication select");
+    let step = Number(select.options[select.options.selectedIndex].value);
+    let min = 0;
+    let label = document.querySelector(".indication label").textContent;
+    let indexSlash = label.indexOf("/");
+    let indexBar = label.indexOf("-");
+    /*if (step >= visualizedImgLen) {
+        console.log(step+max + " " + visualizedImgLen);
+        Object.values(document.querySelectorAll(".indication button[value='+']")).forEach(element => {
+            console.log("great " + true);
+            element.disabled = true;
+            element.style.backgroundColor = "red";
+        });
+
     } else {
-        step = event.options[event.options.selectedIndex].value;
+        Object.values(document.querySelectorAll(".indication button[value='+']")).forEach(element => {
+            console.log("great " + false);
+            element.disabled = false;
+            element.style.backgroundColor = "green";
+        });
+    }*/
+
+    if (event === "undefined" || event.target.id === "selection") {
+        step = Number(select.options[select.options.selectedIndex].value);
+        console.log("Selection " + min + " " + step);
+        displayIndication(min, step, visualizedImgLen, event);
+    } else if (event.target.value === "+") {
+        console.log("plus");
+        min = Number(label.slice(0, indexSlash)) + step;
+        max = Number(label.slice(indexSlash + 1, indexBar));
+        if (max == visualizedImgLen) {
+            console.log("first if");
+            min = Number(label.slice(0, indexSlash));
+            step = max;
+        } else if (max >= visualizedImgLen) {
+            console.log("second if");
+            min = visualizedImgLen + 1 - step;
+            console.log("min " + min);
+            step = visualizedImgLen;
+        } else {
+            console.log("lese");
+            step += max;
+        }
+        displayIndication(min, step, visualizedImgLen, event);
+    } /*else if (event !== "undefined" && event.target.value === "-") {
+        console.log("minus");
+        indexBar = indexBar - 1;
+        step = Number(select.options[select.options.selectedIndex].value);
+        min = Number(label.slice(0, indexSlash)) - step;
+        max = min + step - 1;
+        step = max;
+        displayIndication(min, step, visualizedImgLen, event);
+    }*/ else {
         displayIndication(min, step, visualizedImgLen, event);
     }
+    /*console.log(min + " " + step);
+        if (step >= visualizedImgLen) {
+            console.log(true);
+            Object.values(document.querySelectorAll(".indication button[value='+']")).forEach(element => {
+                console.log("great " + true);
+                element.disabled = true;
+            });
+        }*/
+
     return [min, step];
 }
 
-function displayIndication(min, step, total, event) {
-    Object.values(document.querySelectorAll(".indication label")).forEach(element => {
-        if (total < step) {
-            element.textContent = `${total} / ${total}`;
-        } else {
-            if (min == 0) {
-                element.textContent = `${min+1}/${step} - ${total}`;
+function displayIndication(min, max, total, event) {
+    console.log("MIN si MAX si total " + min + " " + max + " " + total);
+    Object.values(document.querySelectorAll(".indication label")).forEach(
+        (element) => {
+            if (total < max && min == 0) {
+                console.log("total " + total);
+                element.textContent = `${total}/${total}`;
+            } else if (total < max) {
+                element.textContent = `${min}/${total} - ${total}`;
+            } else if (min == 0) {
+                element.textContent = `${min + 1}/${max} - ${total}`;
             } else {
-                element.textContent = `${min+1}/${min+step} - ${total}`;
+                element.textContent = `${min}/${max} - ${total}`;
             }
         }
-    });
-    if (event !== "undefined") {
-        const selects = document.querySelectorAll(".indication select");
-        Object.values(selects).forEach(element => {
-            element.value = step;
-        });
-    }
+    );
 }
 
-function cathcVis(){
+function cathcVis() {
     const visualizedImg = document.querySelectorAll(".image");
     const visualizedImgLen = Object.keys(visualizedImg).length;
     return [visualizedImg, visualizedImgLen];
 }
-function activateImg(visualizedImg, visualizedImgLen, min, step) {
+function activateImg(visualizedImg, visualizedImgLen, min, max) {
     for (let i = 0; i < visualizedImgLen; i++) {
-        if (i >= min && i < min+step) {
+        if (i >= min - 1 && i < max) {
             visualizedImg[i].style.display = "inline-block";
         } else {
             visualizedImg[i].style.display = "none";
         }
     }
 }
-
-function updateNumVis(imgVis, visualizedImgLen) {
-    const numVis = document.querySelectorAll(".indication label");
-    Object.values(numVis).forEach(element => {
-        element.textContent = imgVis + "/" + visualizedImgLen;
-    });
-    lessMoreImg("undefined");
+//doesnt work   well
+function updateSelect(event) {
+    try {
+        if (typeof event !== "undefined" && event.target.id === "selection") {
+            const selects = document.querySelectorAll("#selection");
+            let step = Number(event.target.value);
+            console.log("Select " + step);  
+            Object.values(selects).forEach((element) => {
+                element.selectedIndex.value = step;
+                console.log("value " + event.target.value);
+            });
+        }
+    }
+    catch (error) {
+        console.log("Select catch. " + error);
+    }
 }
 
-function lessMoreImg(event) {
-}
-
+/*function lessMoreImg(event) {}
+ */
 function sunriseSunset() {
     const hour = new Date().getHours();
     const isDay = hour >= 7 && hour < 19; // Ziua este între 6:00 și 19:00
@@ -457,7 +527,9 @@ function sunriseSunset() {
     //const hr1 = document.querySelector("hr");
     const images1 = document.querySelectorAll(".image");
     if (!isDay) {
-        document.querySelectorAll("*").forEach(el => el.style.color = "white");
+        document
+            .querySelectorAll("*")
+            .forEach((el) => (el.style.color = "white"));
         body.classList.add("bodyDark");
         nav1.classList.add("navDark");
         lis1.forEach((li) => {
