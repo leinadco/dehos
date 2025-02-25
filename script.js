@@ -422,7 +422,11 @@ function getMinStep(event, visualizedImgLen) {
     }*/
 
     if (event === "undefined" || event.target.id === "selection") {
-        step = Number(select.options[select.options.selectedIndex].value);
+        if (event === "undefined") {
+            step = Number(select.options[select.options.selectedIndex].value);
+        } else {
+            step = Number(event.target.value);
+        }
         console.log("Selection " + min + " " + step);
         displayIndication(min, step, visualizedImgLen, event);
     } else if (event.target.value === "+") {
@@ -468,7 +472,7 @@ function getMinStep(event, visualizedImgLen) {
 
 function displayIndication(min, max, total, event) {
     console.log("MIN si MAX si total " + min + " " + max + " " + total);
-    Object.values(document.querySelectorAll(".indication label")).forEach(
+    document.querySelectorAll(".indication label").forEach(
         (element) => {
             if (total < max && min == 0) {
                 console.log("total " + total);
@@ -498,26 +502,21 @@ function activateImg(visualizedImg, visualizedImgLen, min, max) {
         }
     }
 }
-//doesnt work   well
 function updateSelect(event) {
-    try {
-        if (typeof event !== "undefined" && event.target.id === "selection") {
-            const selects = document.querySelectorAll("#selection");
-            let step = Number(event.target.value);
-            console.log("Select " + step);  
-            Object.values(selects).forEach((element) => {
-                element.selectedIndex.value = step;
-                console.log("value " + event.target.value);
+    if (event.target.id === "selection") {
+        let step = Number(event.target.value); // Obține valoarea selectată
+        const selects = document.querySelectorAll(".indication select"); // Selectează toate <select>
+        console.log("Select " + step);
+        try {  
+            selects.forEach((element) => {
+                element.value = step; // Setează aceeași valoare pentru toate <select>
             });
+        } catch (error) {
+            console.log("Select catch: " + error);
         }
-    }
-    catch (error) {
-        console.log("Select catch. " + error);
     }
 }
 
-/*function lessMoreImg(event) {}
- */
 function sunriseSunset() {
     const hour = new Date().getHours();
     const isDay = hour >= 7 && hour < 19; // Ziua este între 6:00 și 19:00
