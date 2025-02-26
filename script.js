@@ -280,19 +280,18 @@ function displayNavCategories(oriImages) {
             });
         }
     }
-}
-displayNavCategories(oriImages);
+} displayNavCategories(oriImages);
 
 function filterImages(event) {
-    category = event.target.textContent.toLowerCase();
+    const category = event.target.textContent.toLowerCase();
     const [categories, urls] = objToArr(oriImages, category);
     displayImages(categories, urls);
     activImg("undefined");
     if (category !== "all") {
         const p = document.querySelectorAll(".image > p");
-        for (let i = 0; i < p.length; i++) {
-            p[i].style.display = "none";
-        }
+        p.forEach(element => {
+            element.style.display = "none";
+        });
     }
 }
 
@@ -384,23 +383,21 @@ function createPar(categories /*, div*/) {
 }
 
 function activImg(event = "undefined") {
-    //console.log("Control event " + event.target.id);
-    if (event === "undefined") {
-        console.log("undefined");
-    } else if (event !== "undefined") {
-        console.log("not undefined");
-    }
     const [visualizedImg, visualizedImgLen] = cathcVis();
-    console.log("Visualized images " + visualizedImgLen);
     const [min, step] = getMinStep(event, visualizedImgLen);
-    console.log("MIN si step " + min + " " + step);
     activateImg(visualizedImg, visualizedImgLen, min, step);
     updateSelect(event);
 }
 
 function getMinStep(event, visualizedImgLen) {
-    let select = document.querySelector(".indication select");
-    let step = Number(select.options[select.options.selectedIndex].value);
+    let step = 0;
+    let select = "";
+    if (event !== "undefined" && event.target.id === "selection") {
+        step = Number(event.target.value); // Obține valoarea selectată
+    } else {
+        select = document.querySelector(".indication select");
+        step = Number(select.options[select.options.selectedIndex].value);
+    }
     let min = 0;
     let label = document.querySelector(".indication label").textContent;
     let indexSlash = label.indexOf("/");
@@ -427,35 +424,48 @@ function getMinStep(event, visualizedImgLen) {
         } else {
             step = Number(event.target.value);
         }
-        console.log("Selection " + min + " " + step);
         displayIndication(min, step, visualizedImgLen, event);
     } else if (event.target.value === "+") {
-        console.log("plus");
-        min = Number(label.slice(0, indexSlash)) + step;
+        min = Number(label.slice(0, indexSlash));;
         max = Number(label.slice(indexSlash + 1, indexBar));
         if (max == visualizedImgLen) {
-            console.log("first if");
             min = Number(label.slice(0, indexSlash));
             step = max;
-        } else if (max >= visualizedImgLen) {
-            console.log("second if");
-            min = visualizedImgLen + 1 - step;
-            console.log("min " + min);
+        } else if (min == visualizedImgLen) {
+            min = visualizedImgLen-visualizedImgLen;
             step = visualizedImgLen;
-        } else {
-            console.log("lese");
+        } /*else if (max >= visualizedImgLen) {
+            console.log("third + if");
+            min = visualizedImgLen + 1 - step;
+            step = visualizedImgLen;
+        } */else {
+            min = Number(label.slice(0, indexSlash)) + step;
+            console.log("else +");
             step += max;
         }
         displayIndication(min, step, visualizedImgLen, event);
-    } /*else if (event !== "undefined" && event.target.value === "-") {
-        console.log("minus");
-        indexBar = indexBar - 1;
-        step = Number(select.options[select.options.selectedIndex].value);
-        min = Number(label.slice(0, indexSlash)) - step;
-        max = min + step - 1;
-        step = max;
+    } else if (event.target.value === "-") {
+        min = Number(label.slice(0, indexSlash));;
+        max = Number(label.slice(indexSlash + 1, indexBar));
+        if (min <= 1 && min == visualizedImgLen) {
+            min = 0;
+            step = visualizedImgLen;
+        } else if (max == visualizedImgLen && min < max) {
+            min = min-step;
+            step += min-1;
+        } else if (max == visualizedImgLen || step >= visualizedImgLen) {
+            min = 0;
+            step = visualizedImgLen;
+        } else if (max > min && min > 1) {
+            min = min-step;
+            step += min-1;
+        } /* else {
+            min = Number(label.slice(0, indexSlash)) + step;
+            console.log("else");
+            step += max;
+        }*/
         displayIndication(min, step, visualizedImgLen, event);
-    }*/ else {
+    } else {
         displayIndication(min, step, visualizedImgLen, event);
     }
     /*console.log(min + " " + step);
@@ -471,11 +481,14 @@ function getMinStep(event, visualizedImgLen) {
 }
 
 function displayIndication(min, max, total, event) {
-    console.log("MIN si MAX si total " + min + " " + max + " " + total);
+    //console.log("MIN si MAX si total " + min + " " + max + " " + total);
     document.querySelectorAll(".indication label").forEach(
         (element) => {
-            if (total < max && min == 0) {
-                console.log("total " + total);
+            if (min==0 && max==total) {
+                element.textContent = `${total}/${total}`;
+            } else if (min==total && max == total) {
+                element.textContent = `${total}/${total}`;
+            } else if (total < max && min == 0) {
                 element.textContent = `${total}/${total}`;
             } else if (total < max) {
                 element.textContent = `${min}/${total} - ${total}`;
@@ -503,10 +516,9 @@ function activateImg(visualizedImg, visualizedImgLen, min, max) {
     }
 }
 function updateSelect(event) {
-    if (event.target.id === "selection") {
+    if (event !== "undefined" && event.target.id === "selection") {
         let step = Number(event.target.value); // Obține valoarea selectată
         const selects = document.querySelectorAll(".indication select"); // Selectează toate <select>
-        console.log("Select " + step);
         try {  
             selects.forEach((element) => {
                 element.value = step; // Setează aceeași valoare pentru toate <select>
