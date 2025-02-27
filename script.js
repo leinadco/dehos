@@ -245,9 +245,9 @@ const oriImages = {
 function displayNavCategories(oriImages) {
     //takes original images ai parameter
     //using try-catch-finally to catch errors
-    const navigation = document.querySelector("nav"); //selecting the navigation element
+    const header = document.querySelector("header"); //selecting the navigation element
     try {
-        let ul = "<ul>"; //creating an empty string to store the categories
+        let nav = "<nav><ul>"; //creating an empty string to store the categories
         //creating an empty array to store the categories
         const categories = []; //iterating through the original images
         Object.values(oriImages).forEach((value) => {
@@ -262,10 +262,10 @@ function displayNavCategories(oriImages) {
         categories.sort(); //sorting categories
         categories.unshift("all"); //adding "all" to the categories
         for (let i = 0; i < categories.length; i++) {
-            ul += `<li>${categories[i].toUpperCase()}</li>`; //adding the categories to the unordered list
+            nav += `<li>${categories[i].toUpperCase()}</li>`; //adding the categories to the unordered list
         }
-        ul += "</ul>"; //closing the unordered list
-        navigation.innerHTML = ul; //adding the unordered list to the navigation
+        nav += "</ul></nav><hr />"; //closing the unordered list
+        header.innerHTML = nav; //adding the unordered list to the navigation
         // adding event listener to the list items
         const li = document.querySelectorAll("li");
         for (let i = 0; i < li.length; i++) {
@@ -386,6 +386,7 @@ function displayImages(categories, urls) {  //takes categories and urls as param
         }
     }
     containerImg.innerHTML = container;   //adding the images to the container
+    sunriseSunset();
 }
 
 function createDivImg(url, category /*, containerImg*/) {
