@@ -1,5 +1,4 @@
-console.clear();
-//console.log("HELLO");
+//defining the original images
 const oriImages = {
     1: {
         category: ["moon"],
@@ -242,86 +241,151 @@ const oriImages = {
         url: "Images/20240301_072329.jpg",
     },
 };
+//defining function to display the navigation categories
 function displayNavCategories(oriImages) {
+    //takes original images ai parameter
+    //using try-catch-finally to catch errors
+    const navigation = document.querySelector("nav"); //selecting the navigation element
     try {
-        const navigation = document.querySelector("nav");
-        const ul = document.createElement("ul");
-        const categories = [];
+        let ul = "<ul>"; //creating an empty string to store the categories
+        //creating an empty array to store the categories
+        const categories = []; //iterating through the original images
         Object.values(oriImages).forEach((value) => {
-            oriCategories = value["category"];
+            oriCategories = value.category; //getting the categories from the original images
+            // iterating through the categories
             for (let i = 0; i < oriCategories.length; i++) {
                 if (!categories.includes(oriCategories[i])) {
                     categories.push(oriCategories[i]);
                 }
             }
         });
-        categories.sort();
-        categories.unshift("all");
+        categories.sort(); //sorting categories
+        categories.unshift("all"); //adding "all" to the categories
         for (let i = 0; i < categories.length; i++) {
-            const li = document.createElement("li");
-            li.textContent = categories[i].toUpperCase();
-            li.addEventListener("click", filterImages);
-            ul.appendChild(li);
+            ul += `<li>${categories[i].toUpperCase()}</li>`; //adding the categories to the unordered list
         }
-        navigation.appendChild(ul);
+        ul += "</ul>"; //closing the unordered list
+        navigation.innerHTML = ul; //adding the unordered list to the navigation
+        // adding event listener to the list items
+        const li = document.querySelectorAll("li");
+        for (let i = 0; i < li.length; i++) {
+            li[i].addEventListener("click", filterImages);
+        }
     } catch (error) {
-        console.log("Navigation catch. " + error);
+        navigation.innerHTML = `<h1 style="padding:10px;">Navigation add error: ${error}</h1>`; //displaying the error
     } finally {
+        // finally block to display the indications / images / footer / day-night mode
         try {
-            const [categories, urls] = objToArr(oriImages);
-            displayImages(categories, urls);
-            activImg("undefined");
+            renderIndication(); //calling the function to display navigation indication
         } catch (error) {
-            console.log("Images displaying catch. " + error);
-        } finally {
-            const buttons = document.querySelectorAll(".indication button");
-            buttons.forEach((button) => {
-                button.addEventListener("click", activImg);
+            const indication = document.querySelectorAll(".indication"); //selecting the indication div
+            indication.forEach((element) => {
+                element.innerHTML = `<h1 style="padding:10px;">Indication add error: ${error}</h1>`; //displaying the error
             });
+        } finally {
+            // finally block to display the images / footer / day-night mode
+            try {
+                const [categories, urls] = objToArr(oriImages); //converting the original images to array
+                displayImages(categories, urls); //displaying the images with function
+                activImg("undefined"); //activating all the images at first load
+            } catch (error) {
+                const container = document.querySelector(".container"); //selecting the container div
+                container.innerHTML = `<h1 style="padding:10px;">Images add error: ${error}</h1>`; //displaying the error
+            } finally {
+                // finally block footer / day-night mode
+                try {
+                    const footer = document.querySelector("footer"); //selecting the footer element
+                    let presentation = "<hr><h1>All rights reserved &copy; 2022</h1>";
+                    footer.innerHTML = presentation;
+                } catch (error) {
+                    const footer = document.querySelector("footer"); //selecting the footer element
+                    footer.innerHTML = `<h1 style="padding:10px;">Footer add error: ${error}</h1>` //displaying the error
+                } finally {
+                    // finally block day-night mode
+                    try {
+                        sunriseSunset(); //calling the function to chang day/night mode
+                    } catch (error) {
+                        console.log("Footer error: " + error); //displaying the error
+                    }
+                }
+            }
         }
     }
-} displayNavCategories(oriImages);
+}
+displayNavCategories(oriImages); //first load of the page
 
-function filterImages(event) {
-    const category = event.target.textContent.toLowerCase();
-    const [categories, urls] = objToArr(oriImages, category);
-    displayImages(categories, urls);
-    activImg("undefined");
+//defining the function to filter the images
+function filterImages(event) { //takes event paramenter
+    const category = event.target.textContent.toLowerCase();    //getting the category clicked
+    const [categories, urls] = objToArr(oriImages, category);   //converting the original immaeges to filtered arrays
+    displayImages(categories, urls);    //displaying the filtered images
+    activImg("undefined");  //activating the filtered images
+
+    //deactivating the paragraphs if the category is not "all", just for design
     if (category !== "all") {
         const p = document.querySelectorAll(".image > p");
-        p.forEach(element => {
+        p.forEach((element) => {
             element.style.display = "none";
         });
     }
 }
 
-function objToArr(object, category = "all") {
-    const categories = [];
-    const urls = [];
+//defining the function to render the navigation indication
+function renderIndication() {
+    const indicationCont = document.querySelectorAll(".indication");    //selecting the indication divs
+
+    //defining the indication buttons and select like strings
+    let indication =
+        '<button class="less indi" value="-">Less</button><label for="selection" class="indi"></label>';
+    indication +=
+        '<select id="selection" class="indi" onchange="activImg(event)"><option value="5">5</option><option selected value="10">10</option>';
+    indication +=
+        '<option value="20">20</option><option value="40">40</option><option value="80">80</option><option value="160">160</option>';
+    indication +=
+        '<option value="320">320</option></select><button class="more indi" value="+">More</button>';
+
+    //adding the indication to the divs
+    indicationCont.forEach((element) => {
+        element.innerHTML = indication;
+    });
+
+    //adding event listeners to the buttons, this beceause the events are ignored with the innerHTML
+    const buttons = document.querySelectorAll(".indication button");
+    buttons.forEach((button) => {
+        button.addEventListener("click", activImg);
+    });
+}
+
+//defining the function to convert the original images to arrays
+function objToArr(object, category = "all") {   //takes object, the image array, and category to filter, as parameters
+    const categories = [];  //creating an empty array to store the categories
+    const urls = [];    //creating an empty array to store the urls
+
+    //iterating through the original images
     Object.values(object).forEach((value) => {
-        if (category === "all") {
+        if (category === "all") {   //if the category is "all", all the array is converted in arrays
             categories.push(value["category"]);
             urls.push(value["url"]);
-        } else if (value["category"].includes(category)) {
+        } else if (value["category"].includes(category)) {    //if the category is not "all", only the filtered category is converted in arrays
             categories.push(value["category"]);
             urls.push(value["url"]);
         }
     });
-    return [categories, urls];
+    return [categories, urls];  //returning the categories and urls arrays
 }
 
-async function displayImages(categories, urls) {
-    const containerImg = document.querySelector(".container");
-    let container = "";
-    let nImg = 0;
-    if ((categories.length = urls.length)) {
-        nImg = categories.length;
+//defining the function to display the images, as async function 
+function displayImages(categories, urls) {  //takes categories and urls as parameters, both arrays
+    const containerImg = document.querySelector(".container");    //selecting the container div
+    let container = ""; //creating an empty string to store the images
+
+    //iterating through the categories and urls to render
+    if ((categories.length === urls.length)) {
         for (let i = 0; i < categories.length; i++) {
-            container += createDivImg(urls[i], categories[i]);
+            container += createDivImg(urls[i], categories[i]);  //creating the divs with images
         }
     }
-    containerImg.innerHTML = container;
-    sunriseSunset();
+    containerImg.innerHTML = container;   //adding the images to the container
 }
 
 function createDivImg(url, category /*, containerImg*/) {
@@ -426,39 +490,39 @@ function getMinStep(event, visualizedImgLen) {
         }
         displayIndication(min, step, visualizedImgLen, event);
     } else if (event.target.value === "+") {
-        min = Number(label.slice(0, indexSlash));;
+        min = Number(label.slice(0, indexSlash));
         max = Number(label.slice(indexSlash + 1, indexBar));
         if (max == visualizedImgLen) {
             min = Number(label.slice(0, indexSlash));
             step = max;
         } else if (min == visualizedImgLen) {
-            min = visualizedImgLen-visualizedImgLen;
+            min = visualizedImgLen - visualizedImgLen;
             step = visualizedImgLen;
         } /*else if (max >= visualizedImgLen) {
             console.log("third + if");
             min = visualizedImgLen + 1 - step;
             step = visualizedImgLen;
-        } */else {
+        } */ else {
             min = Number(label.slice(0, indexSlash)) + step;
             console.log("else +");
             step += max;
         }
         displayIndication(min, step, visualizedImgLen, event);
     } else if (event.target.value === "-") {
-        min = Number(label.slice(0, indexSlash));;
+        min = Number(label.slice(0, indexSlash));
         max = Number(label.slice(indexSlash + 1, indexBar));
         if (min <= 1 && min == visualizedImgLen) {
             min = 0;
             step = visualizedImgLen;
         } else if (max == visualizedImgLen && min < max) {
-            min = min-step;
-            step += min-1;
+            min = min - step;
+            step += min - 1;
         } else if (max == visualizedImgLen || step >= visualizedImgLen) {
             min = 0;
             step = visualizedImgLen;
         } else if (max > min && min > 1) {
-            min = min-step;
-            step += min-1;
+            min = min - step;
+            step += min - 1;
         } /* else {
             min = Number(label.slice(0, indexSlash)) + step;
             console.log("else");
@@ -482,23 +546,21 @@ function getMinStep(event, visualizedImgLen) {
 
 function displayIndication(min, max, total, event) {
     //console.log("MIN si MAX si total " + min + " " + max + " " + total);
-    document.querySelectorAll(".indication label").forEach(
-        (element) => {
-            if (min==0 && max==total) {
-                element.textContent = `${total}/${total}`;
-            } else if (min==total && max == total) {
-                element.textContent = `${total}/${total}`;
-            } else if (total < max && min == 0) {
-                element.textContent = `${total}/${total}`;
-            } else if (total < max) {
-                element.textContent = `${min}/${total} - ${total}`;
-            } else if (min == 0) {
-                element.textContent = `${min + 1}/${max} - ${total}`;
-            } else {
-                element.textContent = `${min}/${max} - ${total}`;
-            }
+    document.querySelectorAll(".indication label").forEach((element) => {
+        if (min == 0 && max == total) {
+            element.textContent = `${total}/${total}`;
+        } else if (min == total && max == total) {
+            element.textContent = `${total}/${total}`;
+        } else if (total < max && min == 0) {
+            element.textContent = `${total}/${total}`;
+        } else if (total < max) {
+            element.textContent = `${min}/${total} - ${total}`;
+        } else if (min == 0) {
+            element.textContent = `${min + 1}/${max} - ${total}`;
+        } else {
+            element.textContent = `${min}/${max} - ${total}`;
         }
-    );
+    });
 }
 
 function cathcVis() {
@@ -519,7 +581,7 @@ function updateSelect(event) {
     if (event !== "undefined" && event.target.id === "selection") {
         let step = Number(event.target.value); // Obține valoarea selectată
         const selects = document.querySelectorAll(".indication select"); // Selectează toate <select>
-        try {  
+        try {
             selects.forEach((element) => {
                 element.value = step; // Setează aceeași valoare pentru toate <select>
             });
