@@ -249,9 +249,9 @@ function renderIndication() {
     const slectedOption = 10; //defining the selected option
     //defining the indication buttons and select like strings
     let indication =
-        '<button class="less indi" value="-">Less</button>' +
-        '<label for="selection" class="indi"></label>' +
-        '<select id="selection" class="indi" onchange="activImg(event)">'; //creating the select with the onchange event
+        '<button class="less indiChild" value="-">Less</button>' +
+        '<label class="indiChild"></label>' +
+        '<select id="selection" class="indiChild" onchange="activImg(event)">'; //creating the select with the onchange event
 
     //iterating through the options to render
     options.forEach((option) => {
@@ -262,7 +262,7 @@ function renderIndication() {
         }
     });
     //closing the select and adding the "more" button
-    indication += '</select><button class="more indi" value="+">More</button>';
+    indication += '</select><button class="more indiChild" value="+">More</button>';
 
     //adding the indication to the divs
     indicationCont.forEach((element) => {
@@ -503,20 +503,58 @@ function filterImages(event) {
 function sunriseSunset() {
     const hour = new Date().getHours(); //getting the current hour
     const isDay = hour >= 7 && hour < 19; //setting day to true if the hour is between 7 and 19
-    const body = document.querySelector("body");
-    const nav1 = document.querySelector("nav");
-    const lis1 = document.querySelectorAll("ul > li");
-    const images1 = document.querySelectorAll(".image");
     const all = document.querySelectorAll("*");
-    if (!isDay) {
-        all.forEach((el) => (el.style.color = "white"));
-        body.classList.add("bodyDark");
-        nav1.classList.add("navDark");
-        lis1.forEach((li) => {
-            li.classList.add("darkLi");
+    const bodyElement = document.querySelector("body");
+    const navElement = document.querySelector("nav");
+    const liElements = document.querySelectorAll("ul > li");
+    const indiChildrenElements = document.querySelectorAll(".indiChild");
+    const imagesElements = document.querySelectorAll(".image");
+    
+    if (isDay) {
+        all.forEach((el) => (el.style.color = "black"));
+
+        bodyElement.classList.remove("bodyNight");
+        bodyElement.classList.add("bodyDay");
+
+        navElement.classList.remove("navNight");
+        navElement.classList.add("navDay");
+
+        liElements.forEach((element) => {
+            element.classList.remove("liNight");
+            element.classList.add("liDay");
         });
-        images1.forEach((image) => {
-            image.classList.add("darkImage");
+
+        indiChildrenElements.forEach((element) => {
+            element.classList.remove("indiChildNight");
+            element.classList.add("indiChildDay");
+        });
+
+        imagesElements.forEach((element) => {
+            element.classList.remove("imageNight");
+            element.classList.add("imageDay");
+        });
+    } else {
+        all.forEach((el) => (el.style.color = "white"));
+
+        bodyElement.classList.remove("bodyDay");
+        bodyElement.classList.add("bodyNight");
+        
+        navElement.classList.remove("navDay");
+        navElement.classList.add("navNight");
+
+        liElements.forEach((element) => {
+            element.classList.remove("liDay");
+            element.classList.add("liNight");
+        });
+
+        indiChildrenElements.forEach((element) => {
+            element.classList.remove("imageDay");
+            element.classList.add("indiChildNight");
+        });
+
+        imagesElements.forEach((element) => {
+            element.classList.remove("lightImage");
+            element.classList.add("imageNight");
         });
     }
 }
