@@ -361,7 +361,7 @@ function displayImages(categories, urls) {
     sunriseSunset(); //calling the function to change day/night mode, "needed" after every image change
 }
 //defining the function to display the indications
-function displayIndication(min, max, total, event) {
+function displayIndication(min, max, total) {
     //a lot of if-else to display the indication in the right way, depending on the min, max and total
     //after thinking all the combinations that could occure and could bring the wrong indication
     document.querySelectorAll(".indication label").forEach((element) => {
@@ -494,9 +494,10 @@ function filterImages(event) {
 
     //deactivating the paragraphs if the category is not "all", just for design
     if (category !== "all") {
-        const p = document.querySelectorAll(".image > p");
-        p.forEach((element) => {
-            element.style.display = "none";
+        const images = document.querySelectorAll(".image");
+        images.forEach((element) => {
+            element.removeChild(element.children[1]);
+            element.classList.add("imageFiltered");
         });
     }
 }

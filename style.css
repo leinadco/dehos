@@ -126,6 +126,15 @@ hr {
     /*width: 98%;*/
     /*aspect-ratio: 1 / 1;*/
     border-radius: 10px;
+    /*padding-left: 4px;
+    padding-top: 4px;
+    padding-right: 4px;*/
+}
+/*it delets some "bug" that add a space under each image, without the p element*/
+.imageFiltered {
+    padding-left: 4px;
+    padding-top: 4px;
+    padding-right: 4px;
 }
 /*style for single for day mode*/
 .imageDay {
@@ -165,7 +174,6 @@ img {
     }
     .container {
         width: 70%;
-        
         grid-template-columns: repeat(5, 1fr);
     }
     li {
@@ -178,7 +186,6 @@ img {
     }
     .container {
         width: 85%;
-        
         grid-template-columns: repeat(4, 1fr);
     }
     li {
