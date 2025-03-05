@@ -497,7 +497,6 @@ function filterImages(event) {
         const images = document.querySelectorAll(".image");
         images.forEach((element) => {
             element.removeChild(element.children[1]);
-            element.classList.add("imageFiltered");
         });
     }
 }

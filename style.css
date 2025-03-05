@@ -130,12 +130,6 @@ hr {
     padding-top: 4px;
     padding-right: 4px;*/
 }
-/*it delets some "bug" that add a space under each image, without the p element*/
-.imageFiltered {
-    padding-left: 4px;
-    padding-top: 4px;
-    padding-right: 4px;
-}
 /*style for single for day mode*/
 .imageDay {
     background-color: var(--first-light-color);
