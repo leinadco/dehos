@@ -126,6 +126,7 @@ hr {
     /*width: 98%;*/
     /*aspect-ratio: 1 / 1;*/
     border-radius: 10px;
+    display: flex;
     /*padding-left: 4px;
     padding-top: 4px;
     padding-right: 4px;*/
@@ -159,6 +160,7 @@ img {
 /*style for categories under images*/
 .image > p {
     cursor: default;
+    margin: 5px;
 }
 
 /*styles fr diffrent screen dimensions, for responsive design*/

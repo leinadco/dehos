@@ -633,3 +633,4 @@ function displayNavCategories(oriImages) {
 
 //calling the function to display the navigation categories, that will call all the other functions, at first load of the page
 displayNavCategories(oriImages); //first load of the page
+
